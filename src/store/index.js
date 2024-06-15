@@ -4,6 +4,7 @@ const store = createStore({
   state: {
     isLogin :false,
     isPopupVisible: false,
+    isSignup: false,
     authorDetails: [
       {
         // blogs:[idblog1,idblog2],
@@ -159,7 +160,7 @@ const store = createStore({
 
     mutations:{
       ADD_AUTHOR(state, details) {
-        state.isLogin = true;
+        state.isSignup = true;
         const updatedDetails = [...state.authorDetails, details]; 
         state.authorDetails = updatedDetails;
       },
@@ -174,6 +175,7 @@ const store = createStore({
 
       AUTHOR_POPUP(state,value)
       {
+        state.isLogin = true;
         state.isPopupVisible = value;
       },
     
@@ -189,13 +191,17 @@ const store = createStore({
     getIsLogin(state){
       return state.isLogin;
     },
+
     getIsPopupVisible(state){
       return state.isPopupVisible;
     },
     getSampleArticles(state){
       console.log(state.sampleArticles)
       return state.sampleArticles;
-    }
+    },
+    getIsSignup(state){
+      return state.isSignup;
+    },
   },
 });
 

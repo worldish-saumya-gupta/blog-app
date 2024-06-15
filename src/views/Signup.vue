@@ -1,15 +1,20 @@
 <template>
 <Navbar />
-<div class="login-frm">
-    <div class="popup-form">
-        <AuthorPopUp v-if="getIsPopupVisible && getIsLogin" :authorDetails="authorDetails" />
-    </div>
-    <div class="container" v-if="!getIsLogin">
-        <div class="login-form">
+<div class="signup-frm">
+    <div class="container">
+        <div class="signup-form">
             <div class="logo">
                 <img src="../assets/logo.jpeg">
             </div>
-            <form @submit.prevent="Login">
+            <form @submit.prevent="Signup">
+                <div class="form-element">
+                    <label>First Name</label>
+                    <input type="text" v-model="firstName" required>
+                </div>
+                <div class="form-element">
+                    <label>Last Name</label>
+                    <input type="text" v-model="lastName" required>
+                </div>
                 <div class="form-element">
                     <label>Email</label>
                     <input type="email" v-model="email" required>
@@ -19,11 +24,21 @@
                     <input type="password" v-model="password" required>
                 </div>
                 <div class="form-element">
-                    <button type="submit">Login</button>
+                    <label>City</label>
+                    <input type="text" v-model="city" required>
+                </div>
+                <div class="form-element">
+                    <label>Upload Image</label>
+                    <input type="file" accept="image/*" @change="handleUploadImage" required>
+                </div>
+
+                <div class="form-element">
+                    <button type="submit">Signup</button>
                 </div>
                 <div>
-                    <p>Don't have account?<router-link to="/signup">
-                            Signup
+                    <p>Already has account?
+                        <router-link to="/login">
+                            Login
                         </router-link>
                     </p>
                 </div>
@@ -47,42 +62,45 @@ export default {
     data() {
         return {
             id: '',
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
+            city: '',
+            image: '',
+            blogs: [],
             authorDetails: null
         }
     },
 
     computed: {
-        getIsLogin() {
+        getIsSignup() {
             return this.$store.getters.getIsLogin
         },
-        getIsPopupVisible() {
-            return this.$store.getters.getIsPopupVisible;
-        },
-        getAuthor() {
-            return this.$store.getters.getAuthor;
-        },
-        
-        matchAuthor() {
-            const id = parseInt(this.$route.params.id);
-            return this.getAuthor.find(matchAuthor => matchAuthor.id === id)
-        }
     },
 
     methods: {
 
-        Login() {
-            const MatchAuthor = this.matchAuthor;
-            if(this.email===MatchAuthor.email && this.password===MatchAuthor.password)
-            {
-                this.authorDetails = MatchAuthor;
-                console.log(this.authorDetails)
-                this.$store.commit('AUTHOR_POPUP', true)
-            }
-            else{
-                alert("User Not Valid!")
-            }
+        Signup() {
+            this.authorDetails = {
+                id: this.generateId(),
+                firstName: this.firstName,
+                lastName: this.lastName,
+                email: this.email,
+                password: this.password,
+                city: this.city,
+                image: this.image,
+                blogs: [],
+            };
+
+            //store author data to vuex store
+            this.$store.commit('ADD_AUTHOR', this.authorDetails);
+
+            //store author data to local storage
+            this.saveLocal();
+
+            //redirect to login page
+                this.$router.push({ name: 'Login', params: { id: this.authorDetails.id } });
         },
         saveLocal() {
             let authorString = JSON.stringify(this.authorDetails)
@@ -95,6 +113,7 @@ export default {
 
         handleUploadImage(event) {
             const file = event.target.files[0];
+            // console.log(file)
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
@@ -108,7 +127,7 @@ export default {
     
     
 <style scoped>
-.login-frm {
+.signup-frm {
     background: url('../assets/Background-web-size.png');
     display: flex;
     flex-direction: column;
@@ -124,7 +143,7 @@ export default {
     height: 100vh;
 }
 
-.login-form {
+.signup-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -133,13 +152,13 @@ export default {
     border-radius: 20px;
 }
 
-.login-form img {
+.signup-form img {
     height: 5rem;
     width: 5rem;
     margin-top: 2rem;
 }
 
-.login-form form {
+.signup-form form {
     display: flex;
     flex-direction: column;
     align-content: center;

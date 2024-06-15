@@ -7,9 +7,10 @@
         <router-link to="/" v-if="getIsLogin" @click="logout">
             <p>Logout</p>
         </router-link>
-        <router-link to="/login" v-else>
-            <p>Login</p>
+        <router-link to="/signup" v-else>
+            <p>Signup</p>
         </router-link>
+
     </div>
     <div>
         <button @click="showPopup" v-if="getIsLogin" style="border: none; background: #5bb9eb;">
